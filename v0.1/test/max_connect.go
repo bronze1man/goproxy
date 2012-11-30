@@ -7,7 +7,8 @@ import(
     "bytes"
 )
 func new_connect(end chan int,data []byte){
-	addr,err:=net.ResolveTCPAddr("tcp","localhost:20002");
+    defer func(){end<-1;}()
+	addr,err:=net.ResolveTCPAddr("tcp","127.0.0.1:20002");
 	if (err!=nil){
 		log.Print(err);
 		return;
@@ -22,7 +23,7 @@ func new_connect(end chan int,data []byte){
     newConn.CloseWrite();
     readBuffer := make([]byte,1024);
     newConn.Read(readBuffer);
-    end<-1;
+    
 }
 func dumpGoRoutineNum(){
     for {
@@ -33,7 +34,7 @@ func dumpGoRoutineNum(){
 }
 func main(){
     go dumpGoRoutineNum();
-    connect_num:=10000;
+    connect_num:=1;
     data:=bytes.Repeat([]byte("1"),1000);
     end:=make(chan int,connect_num);
     for i:=0;i<connect_num;i++{
